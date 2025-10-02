@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cric Lives TV – Live Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+
+    header {
+      background: #202020;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    .controls {
+      text-align: center;
+      margin-bottom: 10px;
+      background:#111;
+      padding:8px;
+      border-radius:6px;
+    }
+
+    .controls input, .controls button, .controls select {
+      margin: 4px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .controls button {
+      background: #cc0000;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .video-box {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      background: #000;
+      overflow: hidden;
+      border-radius: 6px;
+    }
+
+    #player {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .logo-overlay {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .logo-overlay img {
+      width:120px;
+      height:auto;
+    }
+
+    .watermark-bar {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 14px;
+      color: #ccc;
+      background: #202020;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      background: #111;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <header>🎥 Cric Lives TV – Live Player</header>
+
+  <div class="container">
+    <div class="controls" id="controls">
+      <input type="text" id="videoUrl" placeholder="Enter M3U8 URL" size="35">
+      <input type="text" id="logoUrl" placeholder="Logo Image URL" size="20">
+      
+      <!-- logo position -->
+      <select id="logoPosition">
+        <option value="top-left">Top-Left</option>
+        <option value="top-right" selected>Top-Right</option>
+        <option value="bottom-left">Bottom-Left</option>
+        <option value="bottom-right">Bottom-Right</option>
+        <option value="center">Center</option>
+      </select>
+      
+      <input type="range" id="logoSize" min="50" max="250" value="120" oninput="resizeLogo(this.value)">
+      <button onclick="loadStream()">Play</button>
+      <button onclick="generateEmbed()">Generate Embed</button>
+    </div>
+
+    <div class="video-box">
+      <div id="player"></div>
+      <div class="logo-overlay" id="logoOverlay">
+        <img id="logoImg" src="">
+      </div>
+    </div>
+
+    <div class="watermark-bar" id="watermark">© 2025 Cric Lives TV</div>
+  </div>
+
+  <footer>© 2025 Cric Lives TV — All Rights Reserved</footer>
+
+  <script>
+    // Clappr Player
+    var player = new Clappr.Player({
+      source: "",
+      parentId: "#player",
+      autoPlay: true,
+      mute: false
+    });
+
+    // load stream
+    function loadStream() {
+      const url = document.getElementById('videoUrl').value;
+      if (url) player.load(url);
+      updateLogoPosition(); // reposition logo after play
+    }
+
+    // Logo url live preview
+    document.getElementById('logoUrl').addEventListener('input', function() {
+      document.getElementById('logoImg').src = this.value;
+    });
+
+    // Logo size
+    function resizeLogo(size) {
+      document.getElementById('logoImg').style.width = size + 'px';
+    }
+
+    // Logo position
+    function updateLogoPosition() {
+      const pos = document.getElementById('logoPosition').value;
+      const overlay = document.getElementById('logoOverlay');
+
+      overlay.style.top = '';
+      overlay.style.bottom = '';
+      overlay.style.left = '';
+      overlay.style.right = '';
+      overlay.style.transform = '';
+
+      if (pos === 'top-left') { overlay.style.top = '10px'; overlay.style.left = '10px'; }
+      if (pos === 'top-right') { overlay.style.top = '10px'; overlay.style.right = '10px'; }
+      if (pos === 'bottom-left') { overlay.style.bottom = '10px'; overlay.style.left = '10px'; }
+      if (pos === 'bottom-right') { overlay.style.bottom = '10px'; overlay.style.right = '10px'; }
+      if (pos === 'center') { overlay.style.top = '50%'; overlay.style.left = '50%'; overlay.style.transform = 'translate(-50%, -50%)'; }
+    }
+
+    document.getElementById('logoPosition').addEventListener('change', updateLogoPosition);
+
+    // Embed link generator
+    function generateEmbed() {
+      const url = document.getElementById('videoUrl').value;
+      const logo = document.getElementById('logoUrl').value;
+      const pos = document.getElementById('logoPosition').value;
+      const size = document.getElementById('logoSize').value;
+
+      if (!url) return alert("Enter a video URL first!");
+
+      const embedLink = `${window.location.origin + window.location.pathname}?url=${encodeURIComponent(url)}&logo=${encodeURIComponent(logo)}&pos=${encodeURIComponent(pos)}&size=${size}`;
+      prompt("Copy Embed Code:", `<iframe src="${embedLink}" width="100%" height="480" frameborder="0" allowfullscreen></iframe>`);
+    }
+
+    // Auto-load for embed mode
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('url')) {
+      document.getElementById('controls').style.display = 'none';
+      player.load(params.get('url'));
+      if (params.get('logo')) document.getElementById('logoImg').src = params.get('logo');
+      if (params.get('size')) resizeLogo(params.get('size'));
+      if (params.get('pos')) document.getElementById('logoPosition').value = params.get('pos');
+      updateLogoPosition();
+    } else {
+      updateLogoPosition();
+    }
+  </script>
+
+</body>
+  </html>

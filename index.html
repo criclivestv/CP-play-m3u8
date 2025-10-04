@@ -1,40 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cric Lives TV – Live Player</title>
-  <script src="https://cdn.jsdelivr.net/npm/@clappr/player@latest/dist/clappr.min.js"></script>
+
+  <!-- Clappr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+
   <style>
+    * {margin:0; padding:0; box-sizing:border-box;}
+
     body {
-      margin: 0;
+      background:#000;
+      color:#fff;
       font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
     }
 
     header {
-      background: #202020;
-      padding: 12px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 10px;
-    }
-
-    .controls {
-      text-align: center;
-      margin-bottom: 10px;
       background:#111;
-      padding:8px;
-      border-radius:6px;
+      padding:10px 15px;
+      text-align:center;
+      font-size:20px;
+      font-weight:bold;
+      color:#f33;
     }
 
-    .controls input, .controls button, .controls select {
+    #player-container {
+      flex:1;
+      position:relative;
+      background:#000;
+    }
+
+    #player {
+      width:100%;
+      height:100%;
+      background:#000;
+    }
+
+    /* Logo overlay */
+    .logo-overlay {
+      position:absolute;
+      width:120px;
+      height:auto;
+      opacity:0.85;
+      cursor:pointer;
+      transition:all 0.3s ease;
+      z-index:20;
+    }
+
+    /* Logo positions */
+    .top-left    { top:10px; left:10px; }
+    .top-right   { top:10px; right:10px; }
+    .bottom-left { bottom:10px; left:10px; }
+    .bottom-right{ bottom:10px; right:10px; }
+    .center      { top:50%; left:50%; transform:translate(-50%,-50%); }
+
+    /* Control panel for logo */
+    .logo-controls {
+      background:#111;
+      padding:10px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .logo-controls button {
+      background:#f33;
+      border:none;
+      color:#fff;
+      padding:5px 12px;
+      border-radius:5px;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .logo-controls button:hover {
+      background:#c11;
+    }
+
+    /* Fullscreen fix for mobile */
+    video, iframe, #player {
+      max-width:100% !important;
+      max-height:100% !important;
+    }
+  </style>
+</head>
+<body>
+
+<header>📺 Cric Lives TV – Live Player</header>
+
+<div id="player-container">
+  <div id="player"></div>
+
+  <!-- Logo Overlay -->
+  <img src="https://www.criclivestv.com/logo.png" alt="Logo" id="logo" class="logo-overlay top-left">
+</div>
+
+<div class="logo-controls">
+  <button onclick="moveLogo('top-left')">Top Left</button>
+  <button onclick="moveLogo('top-right')">Top Right</button>
+  <button onclick="moveLogo('bottom-left')">Bottom Left</button>
+  <button onclick="moveLogo('bottom-right')">Bottom Right</button>
+  <button onclick="moveLogo('center')">Center</button>
+</div>
+
+<script>
+  // Initialize Player
+  const player = new Clappr.Player({
+      source: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", // <-- আপনার LIVE M3U8 URL দিন
+      parentId: "#player",
+      autoPlay: true,
+      width: "100%",
+      height: "100%",
+      mediacontrol: {seekbar:"#ff0000", buttons:"#fff"},
+      fullscreenEnabled: true,
+      hideMediaControl: false,
+      disableContextMenu: true,
+  });
+
+  // Logo move function
+  function moveLogo(position){
+      const logo = document.getElementById('logo');
+      logo.className = 'logo-overlay ' + position;
+  }
+</script>
+
+</body>
+</html>    .controls input, .controls button, .controls select {
       margin: 4px;
       padding: 6px 10px;
       border: none;

@@ -31,7 +31,8 @@
     .bottom-right {bottom:10px; right:10px;}
     .center {top:50%; left:50%; transform:translate(-50%,-50%);}
     footer {
-      background:#111; padding:8px; text-align:center; color:#aaa;
+      height:0;   /* footer লুকিয়ে ফাঁকা করা হলো */
+      visibility:hidden;
     }
   </style>
 </head>
@@ -42,7 +43,7 @@
   <img id="logo" class="logo-overlay" alt="Logo">
 </div>
 
-<footer>Press fullscreen button for immersive experience</footer>
+<footer></footer> <!-- একদম ফাঁকা -->
 
 <script>
   // Get parameters

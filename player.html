@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <style>
+    body,html {
+      margin:0; padding:0;
+      background:#000;
+      height:100%;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    #player-container {
+      position: relative;
+      flex:1;
+      background:#000;
+    }
+    #player {width:100%; height:100%;}
+    .logo-overlay {
+      position:absolute;
+      opacity:0.85;
+      z-index:20;
+    }
+    .top-left {top:10px; left:10px;}
+    .top-right {top:10px; right:10px;}
+    .bottom-left {bottom:10px; left:10px;}
+    .bottom-right {bottom:10px; right:10px;}
+    .center {top:50%; left:50%; transform:translate(-50%,-50%);}
+    footer {
+      background:#111; padding:8px; text-align:center; color:#aaa;
+    }
+  </style>
+</head>
+<body>
+
+<div id="player-container">
+  <div id="player"></div>
+  <img id="logo" class="logo-overlay" alt="Logo">
+</div>
+
+<footer>Press fullscreen button for immersive experience</footer>
+
+<script>
+  // Get parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const src = urlParams.get('src');
+  const logo = urlParams.get('logo');
+  const pos = urlParams.get('pos') || 'top-left';
+  const size = urlParams.get('size') || '120';
+
+  // Setup player
+  const player = new Clappr.Player({
+      source: src,
+      parentId: "#player",
+      autoPlay: true,
+      width: "100%",
+      height: "100%",
+      fullscreenEnabled: true,
+      disableContextMenu: true,
+      hideMediaControl: false
+  });
+
+  // Setup logo
+  const logoImg = document.getElementById('logo');
+  if(logo){
+      logoImg.src = logo;
+      logoImg.classList.add(pos);
+      logoImg.style.width = size + "px";
+  } else {
+      logoImg.style.display = "none";
+  }
+</script>
+
+</body>
+</html>
